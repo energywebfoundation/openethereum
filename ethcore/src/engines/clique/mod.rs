@@ -297,8 +297,7 @@ impl Clique {
 						"Back-filling block state. last_checkpoint_number: {}, target: {}({}).",
 						last_checkpoint_number, header.number(), header.hash());
 
-				let mut chain: &mut VecDeque<Header> = &mut VecDeque::with_capacity(
-					(header.number() - last_checkpoint_number + 1) as usize);
+				let mut chain = VecDeque::with_capacity((header.number() - last_checkpoint_number + 1) as usize);
 
 				// Put ourselves in.
 				chain.push_front(header.clone());
@@ -342,7 +341,7 @@ impl Clique {
 
 				// Backfill!
 				let mut new_state = last_checkpoint_state.clone();
-				for item in chain {
+				for item in &chain {
 					new_state.apply(item, false)?;
 				}
 				new_state.calc_next_timestamp(header.timestamp(), self.period)?;
